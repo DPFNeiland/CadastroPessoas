@@ -1,8 +1,18 @@
 const express = require("express");
 const wrap = require("express-async-error-wrapper");
 const Pessoa = require("../../models/pessoa");
+const multer = require("multer");
 
 const router = express.Router();
+
+// Os arquivos ficarão armazenados temporariamente na memória RAM do servidor
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage })
+
+// Cria um middleware para receber um campo de arquivo 
+const middleware = upload.fields([
+	{ name: "avatar", maxCount: 1 },
+]);
 
 router.get("/listar", wrap(async (req, res) => {
 	const resultado = await Pessoa.listar();
@@ -22,8 +32,8 @@ router.get("/obter", wrap(async (req, res) => {
 	res.json(resultado);
 }));
 
-router.post("/criar", wrap(async (req, res) => {
-	const resultado = await Pessoa.criar(req.body);
+router.post("/criar", middleware, wrap(async (req, res) => {
+	const resultado = await Pessoa.criar(req.body, req.files['avatar']);
 
 	if (typeof resultado === "string") {
 		res.status(400);

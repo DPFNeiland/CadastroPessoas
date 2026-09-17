@@ -1,4 +1,6 @@
 const Sql = require("../data/sql");
+const fs = require("node:fs/promises");
+const path = require("path");
 
 class Pessoa {
 	static validar(pessoa, criacao) {
@@ -35,15 +37,24 @@ class Pessoa {
 		return null;
 	}
 
-	static async criar(pessoa) {
+	static async criar(pessoa, avatar) {
 		const erro = Pessoa.validar(pessoa, true);
 		if (erro)
 			return erro;
+
+		if(!avatar || !avatar.length) {
+			return "Avatar Inválido"
+		}
 
 		return await Sql.connect(async (sql) => {
 			await sql.query("INSERT INTO pessoa (nome, email, telefone) VALUES (?, ?, ?)", [pessoa.nome, pessoa.email, pessoa.telefone]);
 
 			pessoa.id = await sql.scalar("SELECT last_insert_id()");
+
+			// Volta uma pasta para trás (..) e acessa a public (/public)
+			const caminho = path.join(__dirname, "../public/images/avatar/" + pessoa.id + ".jpg")
+
+			await fs.writeFile(caminho, avatar[0].buffer); // salvar
 
 			return pessoa;
 		});
