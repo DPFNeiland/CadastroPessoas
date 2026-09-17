@@ -1,0 +1,50 @@
+
+<div >
+    <button type="button" onclick="listar()"> teste</button>
+</div>
+
+<div id="divPesosas">
+
+</div>
+
+<script>
+    async function listar() {
+        try {
+            const response = await("/api/pessoa/listar")
+
+            if (!response.ok){
+                alert("Erro")
+                return
+            }
+
+
+            const lista = await response.json()
+
+
+            let html = ''
+            
+            for(let i = 0; i < lista.length; i++){
+                let pessoa = lista[i]
+
+                html += `
+                    <div>
+
+                        <img src = "/public/images/avatar/${pessoa.id}.jpg" /> 
+                        <h1>${pessoa.nome}</h1>
+
+                    </div>
+                `
+
+            }
+
+            let divPesssoas = document.getElementById("divPessoas")
+            divPesssoas.innerHTML = html
+
+        } catch(ex){
+            alert("Exceção")
+
+        }
+
+    }
+
+</script>

@@ -11,4 +11,8 @@ router.get("/cadastro", wrap(async (req, res) => {
 	res.render("index/cadastro");
 }));
 
+router.get("/listagem", wrap(async (req, res) => {
+	res.render("index/listagem");
+}));
+
 module.exports = router;
